@@ -26,7 +26,7 @@ pub(crate) fn generate_salt() -> [u8; 16] {
 }
 
 // Encrypts a plaintext string with AES-256-GCM.
-// Returns base64(nonce + ciphertext) — everything needed to decrypt later.
+// Returns base64(nonce + ciphertext) everything needed to decrypt later.
 pub(crate) fn encrypt(key: &[u8; 32], plaintext: &str) -> Result<String, String> {
     let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
 
@@ -60,7 +60,7 @@ pub(crate) fn decrypt(key: &[u8; 32], encoded: &str) -> Result<String, String> {
 
     let plaintext = cipher
         .decrypt(nonce, ciphertext)
-        .map_err(|_| "Decryption failed — wrong password or corrupted data".to_string())?;
+        .map_err(|_| "Decryption failed: wrong password or corrupted data".to_string())?;
 
     String::from_utf8(plaintext).map_err(|e| e.to_string())
 }

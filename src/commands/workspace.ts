@@ -9,15 +9,23 @@ export abstract class WorkspaceCommand {
     return result;
   }
 
-  static async setActiveWorkSpace() {
+  static async setActiveWorkSpace(workspaceId: string) {
     const command = "set_active_workspace";
-    const result: string | undefined = await invoke(command);
+    const result: string | undefined = await invoke(command, {
+      workspace_id: workspaceId,
+    });
     return result;
   }
 
   static async getWorkspaces() {
     const command = "get_workspaces";
     const result: Workspace[] = await invoke(command);
+    return result;
+  }
+
+  static async createWorkspace(workspace: Workspace) {
+    const command = "create_workspace";
+    const result: Workspace[] = await invoke(command, { workspace });
     return result;
   }
 }
