@@ -2,7 +2,7 @@ use sqlx::{Executor, Pool, Sqlite};
 
 use crate::db::orm::{Model, TableMetadata};
 
-#[derive(sqlx::FromRow, serde::Serialize)]
+#[derive(sqlx::FromRow, serde::Serialize, serde::Deserialize)]
 pub struct Workspace {
     pub id: i64,
     pub name: String,
@@ -26,10 +26,4 @@ pub async fn init_workspace_table(pool: &Pool<Sqlite>) -> Result<(), sqlx::Error
 
     println!("Rows affected: {}", result.rows_affected());
     Ok(())
-}
-
-pub async fn get_all_workspaces(pool: &Pool<Sqlite>) -> Result<Vec<Workspace>, sqlx::Error> {
-    let workspac_model = Model::<Workspace>::new(pool);
-    let found = workspac_model.find_all(vec![]).await.unwrap();
-    return Ok(found);
 }
