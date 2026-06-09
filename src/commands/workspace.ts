@@ -1,4 +1,4 @@
-import { Workspace } from "@/types/workspace";
+import { Workspace, WorkspaceInput } from "@/types/workspace";
 import { invoke } from "@tauri-apps/api/core";
 
 // workspace commands
@@ -23,9 +23,9 @@ export abstract class WorkspaceCommand {
     return result;
   }
 
-  static async createWorkspace(workspace: Workspace) {
+  static async createWorkspace(workspace: WorkspaceInput) {
     const command = "create_workspace";
-    const result: Workspace[] = await invoke(command, { workspace });
+    const result: Workspace = await invoke(command, { workspace });
     return result;
   }
 }

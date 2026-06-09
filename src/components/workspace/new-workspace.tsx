@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { InfoIcon, Plus } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import {
   Dialog,
@@ -15,23 +15,30 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-
+import { WorkspaceCommand } from "@/commands/workspace";
+import { Workspace, WorkspaceInput } from "@/types/workspace";
+import { Alert, AlertAction, AlertTitle, AlertDescription } from "../ui/alert";
 export function NewWorkspace() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const { mutate } = useMutation({
-    mutationFn: async (data: { name: string; description: string }) => {
-      // Call your backend API to create a new workspace
-      console.log("data = ", data);
-    },
+    mutationFn: async (data: WorkspaceInput) =>
+      WorkspaceCommand.createWorkspace(data),
     onError: (error) => {
       // Handle error (e.g., show a notification)
 
       console.log("Error creating workspace:", error);
     },
+    onSuccess(data) {
+      console.log("workspace created successfully: ", data);
+    },
   });
   const handleCreateWorkspace = () => {
-    mutate({ name, description });
+    mutate({
+      name,
+      description,
+      created_at: new Date().toISOString(),
+    });
   };
 
   return (

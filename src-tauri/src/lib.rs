@@ -48,6 +48,7 @@ pub fn run() {
             commands::workspace::get_active_workspace,
             commands::workspace::set_active_workspace,
             commands::workspace::create_workspace,
+            commands::workspace::get_workspaces,
             // database commands
             commands::database::init_database
         ])

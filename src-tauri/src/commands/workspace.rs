@@ -2,7 +2,7 @@ use crate::{
     common::state::AppState,
     db::{
         db_state::DbState,
-        models::workspace::Workspace,
+        models::workspace::{Workspace, WorkspaceInput},
         orm::{Boxable, Field, Model},
     },
 };
@@ -24,30 +24,58 @@ pub fn set_active_workspace(state: State<'_, Mutex<AppState>>, workspace_id: Str
 #[tauri::command]
 pub async fn create_workspace(
     state: State<'_, Mutex<DbState>>,
-    workspace: Workspace,
-) -> Result<i64, String> {
+    workspace: WorkspaceInput,
+) -> Result<Workspace, String> {
     let pool = {
         let state = state.lock().unwrap();
         state.get_pool().map_err(|err| err.to_string())?.clone()
     }; // lock dropped here
     let workspace_model = Model::<Workspace>::new(&pool);
-    let result = workspace_model
+    let workspace_id = workspace_model
         .create(&[
             (
                 "name",
                 Box::new(Field {
-                    value: workspace.name,
+                    value: workspace.name.clone(),
                 }) as Box<dyn Boxable + Send + Sync>,
             ),
             (
                 "description",
                 Box::new(Field {
-                    value: workspace.description.unwrap_or_default(),
+                    value: workspace.description.clone().unwrap_or_default(),
+                }) as Box<dyn Boxable + Send + Sync>,
+            ),
+            (
+                "created_at",
+                Box::new(Field {
+                    value: workspace.created_at.clone(),
                 }) as Box<dyn Boxable + Send + Sync>,
             ),
         ])
         .await
         .map_err(|err| err.to_string())?;
+    Ok(Workspace {
+        id: workspace_id,
+        name: workspace.name,
+        description: workspace.description,
+        created_at: workspace.created_at,
+    })
+}
 
-    Ok(result)
+#[tauri::command]
+pub async fn get_workspaces(state: State<'_, Mutex<DbState>>) -> Result<Vec<Workspace>, String> {
+    let pool = {
+        let state = state.lock().unwrap();
+        state.get_pool().map_err(|err| err.to_string())?.clone()
+    }; // lock dropped here
+
+    let workspace_model = Model::<Workspace>::new(&pool);
+
+    let workspaces = workspace_model
+        .find_all(vec![], None)
+        .await
+        .map_err(|err| err.to_string())
+        .unwrap();
+
+    Ok(workspaces)
 }

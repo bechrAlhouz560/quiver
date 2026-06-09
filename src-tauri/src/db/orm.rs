@@ -1,5 +1,4 @@
 use sqlx::query_builder::Separated;
-use sqlx::Executor;
 use sqlx::{sqlite::SqliteRow, FromRow, Pool, QueryBuilder, Sqlite};
 
 use std::marker::PhantomData;
@@ -45,7 +44,7 @@ where
     pub async fn find_all(
         &self,
         cols: Vec<&str>,
-        filters: Option<&[Box<dyn Boxable>]>,
+        filters: Option<&[Box<dyn Boxable + Send + Sync>]>,
     ) -> Result<Vec<T>, sqlx::Error> {
         let mut qb: QueryBuilder<Sqlite> = QueryBuilder::new("SELECT ");
 
@@ -104,6 +103,8 @@ where
         qb.push(")");
 
         let result = qb.build().execute(self.pool).await?;
+
+        println!("last inserted row: {}", result.last_insert_rowid());
         Ok(result.last_insert_rowid())
     }
 }
