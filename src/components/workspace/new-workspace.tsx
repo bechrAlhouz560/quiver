@@ -16,8 +16,7 @@ import { Button } from "../ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { WorkspaceCommand } from "@/commands/workspace";
-import { Workspace, WorkspaceInput } from "@/types/workspace";
-import { Alert, AlertAction, AlertTitle, AlertDescription } from "../ui/alert";
+import { WorkspaceInput } from "@/types/workspace";
 export function NewWorkspace() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");

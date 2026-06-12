@@ -4,8 +4,6 @@ import { NewWorkspace } from "@/components/workspace/new-workspace";
 import WorkspaceCard from "@/components/workspace/workspace-card";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { invoke } from "@tauri-apps/api/core";
-import { InfoIcon } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
@@ -36,15 +34,6 @@ function RouteComponent() {
     queryFn: WorkspaceCommand.getWorkspaces,
     queryKey: ["workspaces"],
   });
-  useEffect(function () {
-    invoke("init_database")
-      .then(function () {
-        console.log("success !");
-      })
-      .catch((err) => {
-        console.log("err ", err);
-      });
-  }, []);
 
   useEffect(
     function () {
@@ -67,7 +56,6 @@ function RouteComponent() {
           })}
         </div>
       </div>
-      <SonnerDemo />
     </div>
   );
 }

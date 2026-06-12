@@ -12,7 +12,7 @@ export abstract class WorkspaceCommand {
   static async setActiveWorkSpace(workspaceId: string) {
     const command = "set_active_workspace";
     const result: string | undefined = await invoke(command, {
-      workspace_id: workspaceId,
+      workspaceId,
     });
     return result;
   }

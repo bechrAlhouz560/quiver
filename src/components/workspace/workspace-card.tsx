@@ -1,16 +1,33 @@
 import { Workspace } from "@/types/workspace";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
-import { Workflow } from "lucide-react";
+import { LayoutDashboardIcon } from "lucide-react";
+import { WorkspaceCommand } from "@/commands/workspace";
+import { useRouter } from "@tanstack/react-router";
+import { formatDateShort } from "@/lib/date";
 export default function WorkspaceCard({ workspace }: { workspace: Workspace }) {
+  const router = useRouter();
+  async function setWorkspace(workspace: Workspace) {
+    await WorkspaceCommand.setActiveWorkSpace(workspace.id.toString());
+    router.navigate({
+      href: `/dashboard`,
+    });
+  }
   return (
-    <Card className="cursor-pointer hover:opacity-55 transition-opacity min-w-52 min-h-52">
-      <CardContent className="flex flex-col gap-2">
+    <Card
+      className="cursor-pointer hover:opacity-55 transition-opacity min-w-52 min-h-52"
+      onClick={() => setWorkspace(workspace)}
+    >
+      <CardContent className="flex flex-col gap-2 h-full">
         <CardTitle className="text-lg font-bold flex gap-2 items-center">
-          <Workflow className="text-primary" /> {workspace.name}
+          <LayoutDashboardIcon className="text-primary" /> {workspace.name}
         </CardTitle>
-        <CardDescription>{workspace.description}</CardDescription>
+        <CardDescription className="flex-1">
+          {workspace.description}
+        </CardDescription>
 
-        <p>{workspace.created_at}</p>
+        <p className="mt-auto text-xs opacity-30 ">
+          {formatDateShort(workspace.created_at)}
+        </p>
       </CardContent>
     </Card>
   );

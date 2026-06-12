@@ -9,18 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as Workspaces_rootRouteImport } from './routes/workspaces/__root'
-import { Route as Dashboard_rootRouteImport } from './routes/dashboard/__root'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkspacesIndexRouteImport } from './routes/workspaces/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 
-const Workspaces_rootRoute = Workspaces_rootRouteImport.update({
-  id: '/workspaces/__root',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Dashboard_rootRoute = Dashboard_rootRouteImport.update({
-  id: '/dashboard/__root',
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -34,15 +30,14 @@ const WorkspacesIndexRoute = WorkspacesIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof Dashboard_rootRoute
-  '/workspaces': typeof Workspaces_rootRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/workspaces/': typeof WorkspacesIndexRoute
 }
@@ -54,47 +49,31 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard/__root': typeof Dashboard_rootRoute
-  '/workspaces/__root': typeof Workspaces_rootRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/workspaces/': typeof WorkspacesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/workspaces' | '/dashboard/' | '/workspaces/'
+  fullPaths: '/' | '/dashboard' | '/dashboard/' | '/workspaces/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/dashboard' | '/workspaces'
-  id:
-    | '__root__'
-    | '/'
-    | '/dashboard/__root'
-    | '/workspaces/__root'
-    | '/dashboard/'
-    | '/workspaces/'
+  id: '__root__' | '/' | '/dashboard' | '/dashboard/' | '/workspaces/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  Dashboard_rootRoute: typeof Dashboard_rootRoute
-  Workspaces_rootRoute: typeof Workspaces_rootRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   WorkspacesIndexRoute: typeof WorkspacesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/workspaces/__root': {
-      id: '/workspaces/__root'
-      path: '/workspaces'
-      fullPath: '/workspaces'
-      preLoaderRoute: typeof Workspaces_rootRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard/__root': {
-      id: '/dashboard/__root'
+    '/dashboard': {
+      id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof Dashboard_rootRouteImport
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -113,19 +92,29 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/': {
       id: '/dashboard/'
-      path: '/dashboard'
+      path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRoute
     }
   }
 }
 
+interface DashboardRouteChildren {
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  Dashboard_rootRoute: Dashboard_rootRoute,
-  Workspaces_rootRoute: Workspaces_rootRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   WorkspacesIndexRoute: WorkspacesIndexRoute,
 }
 export const routeTree = rootRouteImport
